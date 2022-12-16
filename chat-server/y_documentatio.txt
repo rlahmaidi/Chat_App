@@ -1,0 +1,87 @@
+0 -wOg=IBDHj9kq1337 ooulmyr
+
+1- npm run start: This command starts the app with the HTTP server listening on the port defined in the src/main.ts
+
+2- $ npm run start:dev : This command will watch your files, automatically recompiling and reloading the server.
+
+3- Controllers:
+Controllers are responsible for handling incoming requests and returning responses to the client
+- controller's purpose is to receive specific requests for the application. 
+The routing mechanism controls which controller receives which requests. Frequently, 
+each controller has more than one route, and different routes can perform different actions.
+
+4- Handlers often need access to the client request details. Nest provides access to the request object of the 
+underlying platform (Express by default). We can access the request object by instructing Nest to 
+inject it by adding the @Req() decorator to the handler's signature.
+EXAMPLE:
+cats.controller.tsJS (name of file)
+
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(@Req() request: Request): string {
+    return 'This action returns all cats';
+  }
+}
+HINT
+In order to take advantage of express typings (as in the request: Request parameter example above), 
+install @types/express package.
+
+
+5 - GATEWAY :   a gateway  job is to receive and send messages.
+
+6 - 
+@SubscribeMessage('events')
+handleEvent(client: Socket, data: string): string {
+  return data;
+}
+In the example above, the handleEvent() function takes two arguments. The first one is a platform-specific socket instance, while the second one is the data received from the client. This approach is not recommended though, because it requires mocking the socket instance in each unit test.
+
+Once the events message is received, the handler sends an acknowledgment with the same data that was sent over the network. In addition, it's possible to emit messages using a library-specific approach, for example, by making use of client.emit() method. In order to access a connected socket instance, use @ConnectedSocket() decorator.
+
+7 - Now when a client emits the message as follows:
+
+
+socket.emit('events', { name: 'Nest' });
+The handleEvent() method will be executed. In order to listen for messages emitted from within the above handler,
+ the client has to attach a corresponding acknowledgment listener:
+
+
+socket.emit('events', { name: 'Nest' }, (data) => console.log(data));
+Multiple responses#
+The acknowledgment is dispatched only once. Furthermore, it is not supported by native WebSockets implementation.
+ To solve this limitation, you may return an object which consists of two properties.
+ The event which is a name of the emitted event and the data that has to be forwarded to the client.
+
+events.gateway.tsJS
+
+@SubscribeMessage('events')
+handleEvent(@MessageBody() data: unknown): WsResponse<unknown> {
+  const event = 'events';
+  return { event, data };
+}
+
+In order to listen for the incoming response(s), the client has to apply another event listener.
+
+
+socket.on('events', (data) => console.log(data));
+
+8 - CORS:
+CORS is an HTTP-header-based mechanism that allows a server to indicate any origins 
+(domain, scheme, or port) other than its own from which a browser should permit loading resources
+Cross-origin resource sharing (CORS) is a mechanism that allows resources to be requested from another domain.
+Under the hood, Nest makes use of the Express cors package.
+ This package provides various options that you can customize based on your requirements.
+
+9 - DTO:
+ A DTO is an object that defines how the data will be sent over the network. We could determine the DTO schema by using TypeScript interfaces,
+  or by simple classes. Interestingly, we recommend using classes here. 
+
+
+10 - @MessageBody('key') decorator gives you access to the payloads that is comming from the client,
+and we can extract a specific key out that payload by passing it as a parametre to the decorator;
+
+11- @ConnectedSocket() decorator let's you know wich client(wich socket ) this message is comming from;
