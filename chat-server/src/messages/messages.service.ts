@@ -7,7 +7,7 @@ import { Message } from './entities/message.entity'
 
 @Injectable()
 export class MessagesService {
-  messages: Message[] = [{name: 'Marius', text: 'heyooo'}];// i think this where our database will be defined later;
+  messages: Message[] = [{name: 'Marius', text: 'heyooo'} ];// i think this where our database will be defined later;
   clientToUser = {};// cause we need a data structure to keep truck of a client id and name;
   identify(name: string, clientId: string){
     this.clientToUser[clientId] = name;
@@ -19,10 +19,13 @@ export class MessagesService {
     return this.clientToUser[clientId];
   }
 
-  create(createMessageDto: CreateMessageDto) {// he said that here we will add createmessagedto to our fake database, so probably we will pushing to our database here
+  create(createMessageDto: CreateMessageDto, clientId: string) {// he said that here we will add createmessagedto to our fake database, so probably we will pushing to our database here
     //return 'This action adds a new message';
-    const message = {...CreateMessageDto };// i don't know what those 3 points do here?
-    this.messages.push(createMessageDto); 
+    const message = {
+      name: this.clientToUser[clientId],
+      text: createMessageDto.text,
+    };
+    this.messages.push(message); 
     return message;
     
     

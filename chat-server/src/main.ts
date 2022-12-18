@@ -6,7 +6,7 @@ async function bootstrap() {// if the app failed to create app below it will exi
   const app = await NestFactory.create(AppModule);// the app obj provides a set of methods exculisively for a specific platform
   //( express is used by default ), but we don't need to spicify the type unless we want to access the underlying platform API
   // const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  await app.listen(30001);//we simply start up our HTTP listener, which lets the application await inbound(comming) HTTP requests.
+  await app.listen(3001);//we simply start up our HTTP listener, which lets the application await inbound(comming) HTTP requests.
 
 }
 bootstrap();

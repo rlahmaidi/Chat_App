@@ -12,16 +12,30 @@ import { Server, Socket } from 'socket.io';
 })
 export class MessagesGateway {
   server: Server; // a refference to the socket.io server under the hood;
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(private readonly messagesService: MessagesService) {
+    this.create = this.create.bind(this);
+  }
+  afterInit(server: Server){
+    this.server = server;
+  }
 
   @SubscribeMessage('createMessage')// lestenning to an event that has a name createMessage
-  async create(@MessageBody() createMessageDto: CreateMessageDto) {
+  async create(
+    @MessageBody() createMessageDto: 
+    CreateMessageDto,
+    @ConnectedSocket() client: Socket,
+    ) {
     //return this.messagesService.create(createMessageDto);// this line alone will get the message sent, and returns it to the sender
     // but we will change it to send the message to all the client using socket.io
-    const message = await this.messagesService.create(createMessageDto);
+    const message = await this.
+    messagesService.create(
+      createMessageDto,
+      client.id,
+      );
+    
     this.server.emit('message', message); // emit('the event name', the message itself), and it emit the
     // message to all connected clients;
-    return(message);
+    return message;
   }
 
   @SubscribeMessage('findAllMessages')// when you join a room , you need to see the old messages that was in that room before you joined.
