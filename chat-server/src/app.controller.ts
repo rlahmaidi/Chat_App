@@ -7,7 +7,8 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();// this is a user defined  function that will respond to any request comming to route seeted in 
+    return this.appService.getHello();// this is a user defined  function that will 
+    //respond to any request comming to route seeted in 
     // the controller decorator, and when we add the get decorator, this function now will be executed when
     // a request is comming to the route specified in the Controller decortor whit the get request method
   }
